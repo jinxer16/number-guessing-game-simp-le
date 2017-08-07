@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Number Guessing Game</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="description" content="Webpage description goes here." />
+<style type="text/css"><!--
+
+  #mainPanel { position: absolute; z-index: 0; top: 10%; left: 25%; width: 50%; padding: 5%; background-color: white; border-radius: 25px; box-shadow: 10px 5px 5px black }
+  h1 { font-family: sans-serif }
+  #outcomePanel { position: absolute; z-index: -1; top: 5%; left: 35%; width: 30%; padding: 5%; background-color: rgba(255, 255, 255, 0.9); border-radius: 25px; box-shadow: 10px 5px 5px gray; display: none }
+  #iconWinOrLose, #bigNumber { font-size: 72pt; margin-top: -1em; margin-bottom: 12pt }
+  #bigNumber { font-family: monospace; font-weight: bold }
+  a:hover {font-weight: bold }
+
+  @media only screen and (max-width: 768px) {
+  }
+
+  @media only screen and (max-width: 360px) {
+    #mainPanel { top: 40px; left: 20px; width: 250px; padding: 10px }
+    #outcomePanel { top: 90px; left: 30px; width: 220px; padding: 10px; box-shadow: 10px -5px 5px gray }
+  }
+
+// --></style>
+<script type="text/javascript"><!--
+
+  var numToGuess, guessCount, currDiff, prevDiff;
+  var currWord, prevWord;
+
+  function gameInit() {
+    numToGuess = Math.round(Math.random() * 100) + 1;
+    document.getElementById("guessField").value = 50;
+    document.getElementById("guessTemperature").innerHTML = " ";
+    document.getElementById("guessCounter").innerHTML = "None yet";
+    guessTemperatureDisplay(25);
+    document.getElementById("outcomePanel").style.zIndex = "-1";
+    document.getElementById("outcomePanel").style.display = "none";
+    guessCount = 0;
+    currWord = "initial";
+    prevWord = currWord;
+    prevDiff = 0;
+  }
+
+  function notifyWon(winFlag) {
+    if (winFlag) {
+      var winText = "You got it! In " + guessCount + " guess";
+      if (guessCount > 1) {
+        winText += "es"
+      }
+      winText += ".";
+      document.getElementById("iconWinOrLose").innerHTML = "&#x1F388;";
+      document.getElementById("labelWinOrLose").innerHTML = winText
+    } else {
+      document.getElementById("iconWinOrLose").innerHTML = "&#x1F480;";
+      document.getElementById("labelWinOrLose").innerHTML = "Sorry, better luck next time."
+    }
+    document.getElementById("bigNumber").innerHTML = numToGuess;
+    document.getElementById("outcomePanel").style.zIndex = "1";
+    document.getElementById("outcomePanel").style.display = "block"
+  }
+
+  function guessTemperatureDisplay(invTemp) {
+    var colorString;
+    var gradateColor;
+    if (invTemp < 25) {
+      gradateColor = invTemp + 50;
+      colorString = "#FF" + gradateColor + gradateColor
+    }
+    if (invTemp == 25) {
+      colorString = "#FFFFFF"
+    }
+    if (invTemp > 25) {
+      gradateColor = 100 - invTemp;
+      colorString = "#" + gradateColor + gradateColor + "FF"
+    }
+    document.body.style.backgroundColor = colorString;
+  }
+
+  function assessGuess() {
+    var currGuess = parseInt(document.getElementById("guessField").value);
+    guessCount++;
+    currDiff = Math.abs(currGuess - numToGuess);
+    if (currDiff < 25) {
+      currWord = "Warm"
+    } else {
+      currWord = "Cold"
+    }
+    if (currWord.substring(0, 3) == prevWord.substring(0, 3)) {
+      if ((currWord == "Warm" && currDiff < prevDiff) || (currWord == "Cold" && currDiff > prevDiff)) {
+        currWord = currWord + "er"
+      }
+    }
+    document.getElementById("guessTemperature").innerHTML = currWord;
+    document.getElementById("guessCounter").innerHTML = guessCount;
+    guessTemperatureDisplay(currDiff);
+    prevWord = currWord;
+    prevDiff = currDiff;
+    if (currDiff == 0) {
+      notifyWon(true)
+    }
+    if (guessCount == 20) {
+      notifyWon(false)
+    }
+  }
+
+// --></script>
+</head>
+<body onload="gameInit();">
+
+<div id="mainPanel">
+
+<h1>Number Guessing Game</h1>
+
+<p>Try to guess the number between 1 and 100 in twenty guesses or less.</p>
+
+<input id="guessField" type="number" name="guess" value="50" min="1" max="100" step="1">
+
+<input type="button" value="Try it" onclick="assessGuess()">
+
+<p><span id="guessTemperature"></span>...</p>
+
+<p>Guesses so far: <span id="guessCounter">0</span></p>
+
+</div>
+
+<div id="outcomePanel">
+
+<p id="iconWinOrLose">ICON</p>
+
+<p id="labelWinOrLose">WIN OR LOSE TEXT GOES HERE</p>
+
+<p>The number is:<br /><span id="bigNumber">50</span></p>
+
+<input type="button" value="Play again" onclick="gameInit()" /> 
+
+<p>Or <a href="index.html">go back to the home page.</p>
+
+</div>
+
+</body>
+</html>
